@@ -1,0 +1,169 @@
+\section{Problem statement}
+Given an undirected connected graph
+$G=(V,E)$ with $m$ edges and $n$ vertices. How to add $k\leq n^2 - m$ edges such that the MCB of that graph will be minimal.
+
+\section{Definitions and theorems}
+We'll assume in this paper that $G$ is a connected undirected graph consisting of vertices $V(G)$ and $E(G)$ edges, when the context makes it clear, we'll use $V,E$ for the sake of brevity.
+
+\begin{definition}[Relevant cycle set]
+    A cycle $C\subseteq G$ if it can be extended into a MCB. The set of relevant classes of $G$ will be denoted by $\Rc(G)$.
+\end{definition}
+
+\begin{definition}[Triangular basis]
+    A cycle basis consisting only of length 3 cycles.
+\end{definition}
+\begin{lemma}
+    If $G$ has a triangular basis $B$, then the optimal addition $K$ leads to a MCB weight of $w(B)+3k=3(\nu+k)$
+\end{lemma}
+\begin{proof}
+    Since $B$ can be chosen and extended into a MCB by the greedy matroid algorithm, the weight of the new $k$ cycles is at least $3k$. Adding each time an edge that creates a triangle will give k new linearly independent triangles, making the MCB with weight $w(B)+3k$. Adding such edges is possible while the graph is not complete.
+\end{proof}
+
+\begin{lemma}
+    A cycle $C$ is relevant if and only if no $C_1\ldots C_l$ hold $\sum_iC_i=C$ and $w(C_i)<w(C)$ $\forall i$.
+\end{lemma}
+\begin{lemma}
+    Every path sub graph $P$ of a relevant cycle $C$ that holds $w(P)\leq \frac{1}{2}w(C)$ is a shortest path.
+\end{lemma}
+\begin{proof}
+    paper.
+\end{proof}
+
+\begin{lemma}
+    If $G$ has a triangular basis, every MCB of $G$ is triangular.
+\end{lemma}
+\begin{proof}
+    Since the cycle basis is a matroid, the sorted weights of every minimal basis coincide. Every triangular basis will be produced by the greedy matroid algorithm, making it a MCB and restricting all other MCB to be triangular.
+\end{proof}
+
+\begin{theorem}[Sufficient condition for non optimality]
+Consider $K\subseteq E^c$, if MCB $B$ can be extended into a MCB in $G+K$ then either $K$ is non optimal addition or $B$ is triangular.
+\end{theorem}
+\begin{proof}
+    If $G$ has a triangular basis, all relevant cycles are triangles and stay relevant since they could be chosen by the greedy matroid algorithm.
+
+
+    If MCB $B$ has a non triangle $C\in B$, meaning the for some $uv,vw\in C$ $u,w\notin E$ since $uv\circ vw$ is a 2 length path holding  $w(uv\circ vw)=2\leq 4/2\leq w(C)$ making it a shortest path.
+    substituting  $C$ with $uv\circ vw\circ wu$ and $C-uv-vw+uw$ makes a CB of $G+uw$ with weight $w(B)+2$.
+    Since $B$ can be extended into a MCB in $G+K$ then the MCB weight in it is at least $w(B)+3k$. If until $B$ not triangular we'll add edges of the form $uw$ we'll get a basis with weight $w(B)+2c$, when $1\geq c\leq k$ is the number of iterations, and then add $k-3$ triangles we'll get an addition with weight $w(B)+2c+3(k-c)<w(B)+3k$ making $K$ non optimal.
+\end{proof}
+\begin{corollary}
+    If for some $e\in K\subseteq E^c$ there is a MCB $B$ of $G+K-e$ that can be extended into a MCB in $G+K$ then $K$ is non optimal.
+\end{corollary}
+
+\section{Some constructions}
+\subsection{Making cycles relevant}
+\begin{definition}[Relevantizing a cycle]
+    Let $C\subseteq G$ be a circuit in $G$, consider the graph $\Tilde{C}$ that is constructed by adding $r_C$ to $\tilde V$ and $\tilde E=\{r_Cv:v\in C\}\cup E(C)$. $\tilde C$ is the relevantizing  of $C$.
+\end{definition}
+
+\begin{theorem}\label{restricting expansion}
+        Consider a linearly independent set of circuits $B$ in $G$ and it's minimal extension $B'$. For $B_C$ be a MCB of $\tilde C$, the relevantizing of $C$. 
+    
+    The set 
+    $
+    B'\cup \left(\bigcup_{C\in B} B_C\right)
+    $
+    is a MCB of the graph
+    $G\cup \left(\bigcup_{C\in B} \tilde C
+    \right)$
+\end{theorem}
+\begin{proof}
+    $\tilde C$ is a wheel graph for every circuit, making it's MCB a triangle basis where every combination includes $r_C$ and hence independent from every cycle not containing $r_C$. 
+    The greedy matroid algorithm on $G\cup \bigcup_{C\in B} \tilde C$ could start by choosing $\bigcup_{C\in B} B_C$. 
+    
+    Assuming that $B'$ is not a minimal extension of $\bigcup_{C\in B} B_C$, we'll index $B'$ by weight and let $C_i$ to be the first index where $C_1\ldots C_i$ isn't contained in minimal extension. Consider the minimal extension $C_1\ldots C_{i-1},\tilde C_i
+    \ldots \tilde C_\nu$, $C_i$ can be expressed by a combination from 
+    \[
+    \bigcup_{C\in B} B_C \cup \{C_1\ldots C_{i-1},\tilde C_i
+    \ldots \tilde C_\nu\}
+    \]
+    \begin{itemize}
+        \item The combination doesn't contains a cycle from $\bigcup_{C\in B} B_C$. This is because the sub combination using only cycles from $B_C$ has to be $C$ or empty since otherwise $C_i$ will have $r_C$.
+        \item If $\tilde C_j$ isn't contained in $G$ then it has at least 1 $r_C$ vertex, the shortest path between 2 adjacent vertices to $r_C$ is the edge between them, making it a triangle from $B_C$in contradiction.
+    \end{itemize}
+    This means that the combination consists only from cycles contained in $G$ and independent from $B$, making $B'$ not optimal in the first place in contradiction.
+    Making $B'$ a minimal extension to a set that can be extended into a MCB, making the union a MCB.
+\end{proof}
+
+\subsection{Layering a graph}
+\begin{definition}
+    A 2 layering of a graph $G$ is the graph with $v_1,v_2$ for every $v\in V$ and $u_1v_1,u_2v_2,u_1v_2,u_2v_1$. Simply, 2 copies of the graph that with connecting edges between vertices of the form $u_1v_2$ where $uv\in E(G)$.
+\end{definition}
+\begin{definition}[Vertex and edge gadgets]
+    The vertex gadget of $v\in V(G)$ is $v_1v_2\in E^c$ and the edge gadget is $u_1v_1\circ u_2v_2\circ u_1v_2\circ u_2v_1$ denoted as $C_{uv}$.
+\end{definition}
+We'll denote $\{a_i:a\in S\}$ as $S_i$.
+\begin{lemma}\label{gadget set expansion}
+    Let $B$ be a MCB of a triangle free graph $G$ its 2 layering $l(G)$, the set $\{C_e:e\in G\}$ can be extended into a minimal extension of $B_1\cup B_2$.
+\end{lemma}
+\begin{proof}
+    All cycles independent from $B_1,B_2$ must use edges connecting the layers, $\{C_e:e\in G\}$ is independent within itself and all cycles from it are length 4, so they could be chosen by the matroid greedy algorithm.
+    There are no cycles using connecting edges from length 3 since some $u_1v_2\circ v_2w_1\circ w_1u_1$ will imply $uv\circ vw\circ wu$ in $G$ contradicting the fact that its triangle free.
+\end{proof}
+
+
+
+
+
+
+
+
+\section{Reduction}
+\subsection{Reduction problems}
+We'll reduce a NP-hard variation of the vertex cover problem to a decisional variant of the minimum MCB edge addition problem.
+\subsubsection{Decisional minimum MCB edge addition}
+This decision problem receives $\left<G,k,b\right>$ where $G$ is connected graph, $k$ is an integer less or equal than $|V|(|V|-1)/2-|E|$ and $b$ is a non negative integer and decides whether there is a $k$ non edge addition  $K$ resulting in a  graph $l(G)+K$ with MCB weight $\leq b$.
+
+\subsubsection{Decisional triangle-free vertex cover}
+Given $\left<G,k\right>$, where $G$ is a triangle free connected graph and $k$ is an integer, decide whether there is a vertex cover of size $k$.
+
+\subsection{Main reduction}
+\subsubsection{Algorithm}
+Given $G,k$, the reduction proceeds as follows:
+\begin{enumerate}
+    \item Compute a MCB of $G$, $B$.
+    \item Construct the 2 layer graph of $G$, $l(G)$.
+    \item Compute a MCB extension of the union of $B_1,B_2$ and all of the edge gadgets for $l(G)$.
+    \item Releventize all of the non edge gadgets in $l(G)$'s basis.
+    \item Output $\left<l(G),k, 3\nu(l(G))+3k\right>$.
+\end{enumerate}
+\subsubsection{Run time}
+Computing $MCB$ and an MCB extension can be done in polynomial time. The rest of the operations create a new graph is polynomial size of $G$.
+
+\subsubsection{Correctness}
+First, we'll introduce a necessary and sufficient condition for relevance in $l(G)$.
+
+\begin{corollary}
+    The set of edge gadgets can be extended into a MCB extension for $B_1\cup B_2$ with $B'$, the relevatizing of $B_1,B_2,B'$ can be extended into a MCB using the edge gadgets.
+\end{corollary}
+\begin{proof}
+    This is a direct result of 
+    \thref{gadget set expansion} and \thref{restricting expansion}.
+\end{proof}
+
+\begin{lemma}
+    Assume that for each edge gadget has one connecting edge that isn't part of a triangle in $l(G)$, then every if an addition $K$ creates a triangular basis then $g(K)=\{v\in V:v_1\in e\in K\}\cup \{v\in V:v_2\in e\in K\}$ is a vertex cover of $G$.
+\end{lemma}
+\begin{proof}
+    If $K$ turns $l(G)$ MCB into triangular, this means that for every edge gadget the connecting edge $u_1v_2$ there is a triangle $(u_1,v_2,w)$ in $l(G)+K$ that wasn't there before the addition, meaning that at least one of $u_1w,v_2w$ are in $K$.
+\end{proof}
+
+Let $G$ be the graph with the least amount of edges where the reduction not work, $K$.
+
+
+Consider the reduction $l(G)$ and $g(K)$ considering the minimal triangulation additon.
+\[
+\frac{1}{2}\text{OPT}(G)\leq\text{OPT}(l(G))\leq |\{v_1v_2:v\in \text{MVC(G)}\}|=\text{OPT}(G)
+\]
+So $\alpha = 1$.
+And
+
+\[
+\begin{aligned}
+    |\text{OPT}(G)-c(g(K))|&=
+    c(g(K))-\text{OPT}(G)\\
+    &\leq
+    2|K|-2\text{OPT}(l(G))
+\end{aligned}
+\]
